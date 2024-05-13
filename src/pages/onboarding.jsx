@@ -3,6 +3,7 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { FaCamera } from "react-icons/fa";
+import Avatar from "@/components/common/Avatar";
 
 function onboarding() {
   const { userInfo } = useSelector((state) => state.user);
@@ -34,6 +35,7 @@ function onboarding() {
             label
           />
         </div>
+        <Avatar type={"xl"} image={"/default_avatar.png"} />
       </div>
     </div>
   );

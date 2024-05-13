@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 
-function ContextMenu() {
+function ContextMenu({ option, coordinates, contextMenu, setContextMenu }) {
+  const contextMenuRef = useRef(null);
   return <div>ContextMenu</div>;
 }
 
