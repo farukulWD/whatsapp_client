@@ -23,7 +23,7 @@ function onboarding() {
           />
           <span className="text-white text-7xl">Whatsapp</span>
         </div>
-        <h2 className="text-2xl text-white">Create your profile</h2>
+        <h2 className="text-2xl text-white mb-4">Create your profile</h2>
         <div className="flex justify-center items-center gap-6">
           <div className="flex flex-col items-center justify-center mt-5 gap-6">
             <Input
@@ -41,7 +41,7 @@ function onboarding() {
               label
             />
           </div>
-          <Avatar type={"xl"} image={"/default_avatar.png"} />
+          <Avatar type={"xl"} setImage={setImage} image={image} />
         </div>
       </div>
     </>

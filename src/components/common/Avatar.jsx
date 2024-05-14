@@ -2,14 +2,16 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { FaCamera } from "react-icons/fa";
 import ContextMenu from "./ContextMenu";
+import PhotoLibrary from "./PhotoLibrary";
 
-function Avatar({ type, image }) {
+function Avatar({ type, image, setImage }) {
   const [hover, setHover] = useState(false);
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [contextMenuCoordinates, setContextMenuCoordinates] = useState({
     x: 0,
     y: 0,
   });
+  const [showLibrary, setShowLibrary] = useState(false);
   const shoContextMenu = (e) => {
     e.preventDefault();
     setContextMenuCoordinates({ x: e.pageX, y: e.pageY });
@@ -19,8 +21,8 @@ function Avatar({ type, image }) {
   const contextMenuOptions = [
     { name: "Take Photo", callback: () => {} },
     { name: "Chose Photo", callback: () => {} },
-    { name: "Upload From Library", callback: () => {} },
-    { name: "Remove Photo", callback: () => {} },
+    { name: "Upload From Library", callback: () => setShowLibrary(true) },
+    { name: "Remove Photo", callback: () => setImage("/default_avatar.png") },
   ];
   return (
     <>
@@ -110,7 +112,7 @@ function Avatar({ type, image }) {
                   Upload <br /> Profile <br /> Photo
                 </span>
               </div>
-              <div className="w-60 h-60">
+              <div className="w-52 h-52">
                 <Image
                   src={image}
                   alt="avatar"
@@ -129,6 +131,12 @@ function Avatar({ type, image }) {
           contextMenu={contextMenuVisible}
           setContextMenu={setContextMenuVisible}
         ></ContextMenu>
+      )}
+      {showLibrary && (
+        <PhotoLibrary
+          setImage={setImage}
+          setShowLibrary={setShowLibrary}
+        ></PhotoLibrary>
       )}
     </>
   );
