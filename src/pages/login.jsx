@@ -6,20 +6,23 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function login() {
   const googleProvider = new GoogleAuthProvider();
+  const { userInfo, newUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const router = useRouter();
-
+  useEffect(() => {
+    if (!newUser && userInfo?.id) router.push("/");
+  }, [newUser, userInfo]);
   const handleLogin = async () => {
     const {
-      user: { displayName: name, email, photoURL: profileImage },
+      user: { displayName: name, email, photoURL: profilePicture },
     } = await signInWithPopup(firebaseAuth, googleProvider);
-    const user = { name, email, profileImage, status: "" };
+    const user = { name, email, profilePicture, status: "" };
     if (email) {
       try {
         const { data } = await axios.post(CHECK_USER_ROUTE, { email });
@@ -27,6 +30,12 @@ function login() {
           dispatch(setNewUser(true));
           dispatch(setUserInfo(user));
           router.push("/onboarding");
+        } else {
+          const { id, name, email, profilePicture, about } = data.data;
+          const userData = { name, email, profilePicture, status: about, id };
+          dispatch(setNewUser(false));
+          dispatch(setUserInfo(userData));
+          router.push("/");
         }
       } catch (error) {
         console.log(error);
