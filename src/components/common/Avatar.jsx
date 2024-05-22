@@ -6,7 +6,7 @@ import PhotoLibrary from "./PhotoLibrary";
 import PhotoPicker from "./PhotoPicker";
 import CapturePhoto from "./CapturePhoto";
 
-function Avatar({ type, image, setImage }) {
+function Avatar({ type, image, setImage, isHover = false }) {
   const [hover, setHover] = useState(false);
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [contextMenuCoordinates, setContextMenuCoordinates] = useState({
@@ -73,7 +73,7 @@ function Avatar({ type, image, setImage }) {
             >
               <div
                 className={`flex flex-col gap-2 absolute w-10 h-10 left-0 top-0 bg-photopicker-overlay-background rounded-full z-10 justify-center items-center text-white ${
-                  hover ? "visible" : "hidden"
+                  hover && isHover ? "visible" : "hidden"
                 }`}
               >
                 <FaCamera
@@ -104,7 +104,7 @@ function Avatar({ type, image, setImage }) {
             >
               <div
                 className={`flex flex-col gap-2 absolute w-28 h-28 left-0 top-0 bg-photopicker-overlay-background rounded-full z-10 justify-center items-center text-white ${
-                  hover ? "visible" : "hidden"
+                  hover && isHover ? "visible" : "hidden"
                 }`}
               >
                 <FaCamera
