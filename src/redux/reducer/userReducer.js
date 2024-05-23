@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   userInfo: null,
   newUser: false,
+  contactsPage: false,
+  currentChatUser: undefined,
 };
 
 export const userSlice = createSlice({
@@ -15,9 +17,16 @@ export const userSlice = createSlice({
     setNewUser: (state, action) => {
       state.newUser = action.payload;
     },
+    setContactPage: (state) => {
+      state.contactsPage = !state.contactsPage;
+    },
+    setCurrentChatUser: (state, action) => {
+      state.currentChatUser = action.payload;
+    },
   },
 });
 
-export const { setUserInfo, setNewUser } = userSlice.actions;
+export const { setUserInfo, setNewUser, setContactPage, setCurrentChatUser } =
+  userSlice.actions;
 
 export default userSlice.reducer;

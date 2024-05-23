@@ -103,7 +103,7 @@ function Avatar({ type, image, setImage, isHover = false }) {
               className="relative cursor-pointer z-0"
             >
               <div
-                className={`flex flex-col gap-2 absolute w-28 h-28 left-0 top-0 bg-photopicker-overlay-background rounded-full z-10 justify-center items-center text-white ${
+                className={`flex flex-col gap-2 absolute w-16 h-16 left-0 top-0 bg-photopicker-overlay-background rounded-full z-10 justify-center items-center text-white ${
                   hover && isHover ? "visible" : "hidden"
                 }`}
               >
@@ -115,7 +115,7 @@ function Avatar({ type, image, setImage, isHover = false }) {
                   Upload <br /> Profile <br /> Photo
                 </span>
               </div>
-              <div className="w-28 h-28">
+              <div className="w-16 h-16">
                 <Image
                   src={image}
                   alt="avatar"

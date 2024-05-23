@@ -11,7 +11,7 @@ import { useRouter } from "next/router";
 import Chat from "./Chat/Chat";
 
 function Main() {
-  const { userInfo } = useSelector((state) => state.user);
+  const { userInfo, currentChatUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [redirectLogin, setRedirectLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,8 +45,8 @@ function Main() {
     <>
       <div className="grid grid-cols-main w-full h-screen max-h-screen max-w-full overflow-hidden">
         <ChatList isLoading={isLoading} />
-        {/* <Empty /> */}
-        <Chat />
+
+        {currentChatUser ? <Chat /> : <Empty />}
       </div>
     </>
   );
