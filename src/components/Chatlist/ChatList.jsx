@@ -18,7 +18,10 @@ function ChatList({ isLoading }) {
   }, [contactsPage]);
 
   return (
-    <div className="bg-panel-header-background z-10 ">
+    <div
+      className="bg-panel-header-background z-10 "
+      style={{ position: "relative", zIndex: 999 }}
+    >
       {pageType === "default" && (
         <>
           {isLoading ? <p>Loading..</p> : <ChatListHeader />}

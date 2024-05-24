@@ -1,11 +1,57 @@
+import { calculateTime } from "@/utils/CalculateTime";
 import React from "react";
+import { useSelector } from "react-redux";
+import MessageStatus from "../common/MessageStatus";
 
 function ChatContainer() {
+  const { userInfo, currentChatUser } = useSelector((state) => state.user);
+  const { messages } = useSelector((state) => state.message);
+
   return (
     <div className="h-[85vh] w-full relative flex-grow overflow-auto custom-scrollbar z-10">
-      <div className="bg-chat-background bg-fixed h-full w-full absolute top-0 left-0 opacity-5 z-0"></div>
-      <div className="flex w-full">
-        <div className="flex justify-end flex-col w-full overflow-auto gap-1"></div>
+      <div className="mx-10  mt-5 mb-10 bottom-0 relative left-0 z-40">
+        <div className="flex w-full">
+          <div className="flex justify-end flex-col w-full  gap-1">
+            {messages?.map((message, index) => {
+              return (
+                <div
+                  key={message?.id}
+                  className={`flex ${
+                    message?.senderId === currentChatUser?.id
+                      ? "justify-start"
+                      : "justify-end"
+                  }`}
+                >
+                  {message?.type === "text" && (
+                    <div
+                      className={`px-2 py-[5px] text-white flex gap-2 items-end text-sm rounded-md max-w-[45%] ${
+                        message?.senderId === currentChatUser?.id
+                          ? "bg-incoming-background"
+                          : "bg-outgoing-background"
+                      }`}
+                    >
+                      <span style={{ maxWidth: "47ch" }} className="break-all">
+                        {message?.message}
+                      </span>
+                      <div className="flex items-end">
+                        <span className="text-bubble-meta text-[11px] pt-1 min-w-fit">
+                          {calculateTime(message?.createdAt)}
+                        </span>
+                        <span>
+                          {message?.senderId === userInfo?.id && (
+                            <MessageStatus
+                              messageStatus={message?.messageStatus}
+                            />
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );
