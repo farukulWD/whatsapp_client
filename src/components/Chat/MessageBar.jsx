@@ -1,16 +1,21 @@
 import { addMessages } from "@/redux/reducer/messageReducer";
-import { SEND_MESSAGE_ROUTE } from "@/utils/ApiRoutes";
+import { ADD_IMAGE_ROUTE, SEND_MESSAGE_ROUTE } from "@/utils/ApiRoutes";
 import axios from "axios";
-import React, { useState } from "react";
+import EmojiPicker from "emoji-picker-react";
+import React, { useEffect, useRef, useState } from "react";
 import { BsEmojiSmile } from "react-icons/bs";
 import { FaMicrophone } from "react-icons/fa";
 import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
+import PhotoPicker from "../common/PhotoPicker";
 
 function MessageBar() {
   const { userInfo, currentChatUser } = useSelector((state) => state.user);
   const { socket } = useSelector((state) => state.message);
+  const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+  const [graphPhoto, setGraphPhoto] = useState(false);
+  const emojiRef = useRef(null);
   const dispatch = useDispatch();
   const [text, setText] = useState("");
   const handleSend = async () => {
@@ -34,16 +39,80 @@ function MessageBar() {
       console.log(error);
     }
   };
+  const handleEmoji = (emoji) => {
+    setText((pre) => pre + emoji.emoji);
+  };
+
+  useEffect(() => {
+    const handleOutSide = (event) => {
+      if (!event.target.id) {
+        if (emojiRef.current && !emojiRef.current.contains(event.target)) {
+          setEmojiPickerOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener("click", handleOutSide);
+    return () => {
+      document.removeEventListener("click", handleOutSide);
+    };
+  }, []);
+  useEffect(() => {
+    if (graphPhoto) {
+      const data = document.getElementById("photo-picker");
+      data.click();
+      document.body.onfocus = (e) => {
+        setTimeout(() => {
+          setGraphPhoto(false);
+        }, 1000);
+      };
+    }
+  }, [graphPhoto]);
+
+  const photoPickerChange = async (event) => {
+    try {
+      const file = await event.target.files[0];
+      const formData = new FormData();
+      formData.append("image", file);
+      const { data } = await axios.post(ADD_IMAGE_ROUTE, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        params: {
+          from: userInfo?.id,
+          to: currentChatUser?.id,
+        },
+      });
+
+      socket.current.emit("send-msg", {
+        from: data?.message?.senderId,
+        to: data?.message?.receiverId,
+        message: data?.message,
+      });
+      dispatch(addMessages(data?.message));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="bg-panel-header-background h-20 px-4 flex gap-6 items-center z-10 relative">
       <>
         <div className="flex gap-6">
           <BsEmojiSmile
+            onClick={() => setEmojiPickerOpen(true)}
             title="Emoji"
             className="text-panel-header-icon text-xl cursor-pointer"
+            id="emoji-open"
           />
+          {emojiPickerOpen && (
+            <div ref={emojiRef} className="absolute bottom-24 left-16">
+              <EmojiPicker onEmojiClick={handleEmoji}></EmojiPicker>
+            </div>
+          )}
+
           <ImAttachment
+            onClick={() => setGraphPhoto(true)}
             title="Attachment"
             className="text-panel-header-icon text-xl cursor-pointer"
           />
@@ -71,6 +140,7 @@ function MessageBar() {
           </button>
         </div>
       </>
+      {graphPhoto && <PhotoPicker onChange={photoPickerChange}></PhotoPicker>}
     </div>
   );
 }
