@@ -9,11 +9,16 @@ import { ImAttachment } from "react-icons/im";
 import { MdSend } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import PhotoPicker from "../common/PhotoPicker";
+import dynamic from "next/dynamic";
+const CaptureAudio = dynamic(() => import("../common/CaptureAudio"), {
+  ssr: false,
+});
 
 function MessageBar() {
   const { userInfo, currentChatUser } = useSelector((state) => state.user);
   const { socket } = useSelector((state) => state.message);
   const [emojiPickerOpen, setEmojiPickerOpen] = useState(false);
+  const [showAudioRecorder, setShowAudioRecorder] = useState(false);
   const [graphPhoto, setGraphPhoto] = useState(false);
   const emojiRef = useRef(null);
   const dispatch = useDispatch();
@@ -97,50 +102,59 @@ function MessageBar() {
 
   return (
     <div className="bg-panel-header-background h-20 px-4 flex gap-6 items-center z-10 relative">
-      <>
-        <div className="flex gap-6">
-          <BsEmojiSmile
-            onClick={() => setEmojiPickerOpen(true)}
-            title="Emoji"
-            className="text-panel-header-icon text-xl cursor-pointer"
-            id="emoji-open"
-          />
-          {emojiPickerOpen && (
-            <div ref={emojiRef} className="absolute bottom-24 left-16">
-              <EmojiPicker onEmojiClick={handleEmoji}></EmojiPicker>
-            </div>
-          )}
-
-          <ImAttachment
-            onClick={() => setGraphPhoto(true)}
-            title="Attachment"
-            className="text-panel-header-icon text-xl cursor-pointer"
-          />
-        </div>
-        <div className="flex w-full h-10 rounded-lg items-center">
-          <textarea
-            type="text"
-            placeholder="Type a message"
-            className="bg-input-background focus:outline-none w-full text-sm text-white h-10 px-5 py-2 rounded-lg"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-        </div>
-        <div className="w-10 items-center justify-center">
-          <button>
-            <MdSend
-              title="Send"
+      {!showAudioRecorder && (
+        <>
+          <div className="flex gap-6">
+            <BsEmojiSmile
+              onClick={() => setEmojiPickerOpen(true)}
+              title="Emoji"
               className="text-panel-header-icon text-xl cursor-pointer"
-              onClick={() => handleSend()}
+              id="emoji-open"
             />
-            {/* <FaMicrophone
-              title="Record"
+            {emojiPickerOpen && (
+              <div ref={emojiRef} className="absolute bottom-24 left-16">
+                <EmojiPicker onEmojiClick={handleEmoji}></EmojiPicker>
+              </div>
+            )}
+
+            <ImAttachment
+              onClick={() => setGraphPhoto(true)}
+              title="Attachment"
               className="text-panel-header-icon text-xl cursor-pointer"
-            /> */}
-          </button>
-        </div>
-      </>
+            />
+          </div>
+          <div className="flex w-full h-10 rounded-lg items-center">
+            <textarea
+              type="text"
+              placeholder="Type a message"
+              className="bg-input-background focus:outline-none w-full text-sm text-white h-10 px-5 py-2 rounded-lg"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+          </div>
+          <div className="w-10 items-center justify-center">
+            <button>
+              {text.length !== 0 ? (
+                <MdSend
+                  title="Send"
+                  className="text-panel-header-icon text-xl cursor-pointer"
+                  onClick={() => handleSend()}
+                />
+              ) : (
+                <FaMicrophone
+                  onClick={() => setShowAudioRecorder(!showAudioRecorder)}
+                  title="Record"
+                  className="text-panel-header-icon text-xl cursor-pointer"
+                />
+              )}
+            </button>
+          </div>
+        </>
+      )}
       {graphPhoto && <PhotoPicker onChange={photoPickerChange}></PhotoPicker>}
+      {showAudioRecorder && (
+        <CaptureAudio setShowAudioRecorder={setShowAudioRecorder} />
+      )}
     </div>
   );
 }
