@@ -32,6 +32,7 @@ function Main() {
   }, [redirectLogin]);
 
   onAuthStateChanged(firebaseAuth, async (currentUser) => {
+    console.log(currentUser);
     if (!currentUser) setRedirectLogin(true);
     if (!userInfo && currentUser) {
       setIsLoading(true);

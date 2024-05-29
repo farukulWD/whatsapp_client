@@ -1,3 +1,6 @@
+import { addMessages } from "@/redux/reducer/messageReducer";
+import { ADD_AUDIO_ROUTE } from "@/utils/ApiRoutes";
+import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import {
   FaMicrophone,
@@ -7,11 +10,13 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import { MdSend } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import WaveSurfer from "wavesurfer.js";
 
 function CaptureAudio({ setShowAudioRecorder }) {
   const { userInfo, currentChatUser } = useSelector((state) => state.user);
+  const { socket } = useSelector((state) => state.message);
+  const dispatch = useDispatch();
   const [isRecording, setIsRecording] = useState(false);
   const [recordedAudio, setRecordedAudio] = useState(null);
   const [waveform, setWaveForm] = useState(null);
@@ -24,6 +29,7 @@ function CaptureAudio({ setShowAudioRecorder }) {
   const audioRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const waveFormRef = useRef(null);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     const wavesurfer = WaveSurfer.create({
@@ -88,7 +94,12 @@ function CaptureAudio({ setShowAudioRecorder }) {
           waveform.load(audioUrl);
         };
         mediaRecorder.start();
+
+        timerRef.current = setInterval(() => {
+          setRecordingDuration((prevDuration) => prevDuration + 1);
+        }, 1000);
       })
+
       .catch((error) => {
         console.log(error);
       });
@@ -99,11 +110,7 @@ function CaptureAudio({ setShowAudioRecorder }) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       waveform.stop();
-
-      const stream = audioRef.current.srcObject;
-      const tracks = stream.getTracks();
-      tracks.forEach((track) => track.stop());
-
+      clearInterval(timerRef.current);
       const audioChunks = [];
       mediaRecorderRef.current.addEventListener("dataavailable", (event) => {
         audioChunks.push(event.data);
@@ -113,8 +120,13 @@ function CaptureAudio({ setShowAudioRecorder }) {
         const audioFile = new File([audioBlob], "recording.mp3", {
           type: "audio/mp3",
         });
+
         setRenderedAudio(audioFile);
       });
+
+      const stream = audioRef.current.srcObject;
+      const tracks = stream.getTracks();
+      tracks.forEach((track) => track.stop());
     }
   };
 
@@ -143,8 +155,29 @@ function CaptureAudio({ setShowAudioRecorder }) {
     }
   }, [recordedAudio]);
 
-  const handleSendAudio = () => {
-    console.log(recordedAudio);
+  const handleSendAudio = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("audio", renderedAudio);
+      const { data } = await axios.post(ADD_AUDIO_ROUTE, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        params: {
+          from: userInfo?.id,
+          to: currentChatUser?.id,
+        },
+      });
+      socket.current.emit("send-msg", {
+        from: data?.message?.senderId,
+        to: data?.message?.receiverId,
+        message: data?.message,
+      });
+      dispatch(addMessages(data?.message));
+      setShowAudioRecorder(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
