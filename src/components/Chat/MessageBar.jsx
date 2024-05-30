@@ -101,7 +101,7 @@ function MessageBar() {
   };
 
   return (
-    <div className="bg-panel-header-background h-20 px-4 flex gap-6 items-center z-10 relative">
+    <div className="bg-panel-header-background h-20 mt-auto px-4 flex gap-6 items-center z-10 relative">
       {!showAudioRecorder && (
         <>
           <div className="flex gap-6">
