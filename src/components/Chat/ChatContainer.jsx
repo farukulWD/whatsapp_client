@@ -9,20 +9,19 @@ const VoiceMessage = dynamic(() => import("./VoiceMessage"), { ssr: false });
 function ChatContainer() {
   const { userInfo, currentChatUser } = useSelector((state) => state.user);
   const { messages } = useSelector((state) => state.message);
-  const chatContainerRef = useRef(null);
+
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop =
-        chatContainerRef.current.scrollHeight;
-    }
+    scrollToBottom();
   }, [messages]);
 
   return (
-    <div
-      ref={chatContainerRef}
-      className="h-[85vh] w-full relative flex-grow overflow-auto custom-scrollbar z-10"
-    >
+    <div className="h-[85vh] w-full relative flex-grow overflow-auto custom-scrollbar z-10">
       <div className="mx-10  mt-5 mb-10 bottom-0 relative left-0 z-40">
         <div className="flex w-full">
           <div className="flex justify-end flex-col w-full  gap-1">

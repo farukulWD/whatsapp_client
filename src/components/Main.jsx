@@ -15,9 +15,11 @@ import {
   setMessages,
   setSocket,
 } from "@/redux/reducer/messageReducer";
+import SearchMessages from "./Chat/SearchMessages";
 
 function Main() {
   const { userInfo, currentChatUser } = useSelector((state) => state.user);
+  const { searchMessage } = useSelector((state) => state.message);
   const dispatch = useDispatch();
   const [redirectLogin, setRedirectLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -91,7 +93,14 @@ function Main() {
       <div className="grid grid-cols-main w-full h-screen max-h-screen max-w-full overflow-hidden">
         <ChatList isLoading={isLoading} />
 
-        {currentChatUser ? <Chat /> : <Empty />}
+        {currentChatUser ? (
+          <div className={searchMessage ? "grid grid-cols-2" : "grid-cols-2"}>
+            <Chat />
+            {searchMessage && <SearchMessages />}
+          </div>
+        ) : (
+          <Empty />
+        )}
       </div>
     </>
   );

@@ -3,6 +3,7 @@ const { createSlice } = require("@reduxjs/toolkit");
 const initialState = {
   messages: [],
   socket: undefined,
+  searchMessage: false,
 };
 
 const messageSlice = createSlice({
@@ -28,9 +29,13 @@ const messageSlice = createSlice({
         console.log("Duplicate message ID detected, skipping add.");
       }
     },
+    setSearchMessage: (state) => {
+      state.searchMessage = !state.searchMessage;
+    },
   },
 });
 
-export const { setMessages, setSocket, addMessages } = messageSlice.actions;
+export const { setMessages, setSocket, addMessages, setSearchMessage } =
+  messageSlice.actions;
 
 export default messageSlice.reducer;

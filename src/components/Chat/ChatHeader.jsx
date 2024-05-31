@@ -4,10 +4,12 @@ import { MdCall } from "react-icons/md";
 import { IoVideocam } from "react-icons/io5";
 import { BiSearchAlt2 } from "react-icons/bi";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearchMessage } from "@/redux/reducer/messageReducer";
 
 function ChatHeader() {
   const { currentChatUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   return (
     <div
       className="h-16 px-4 py-3 flex justify-between items-center z-10 bg-panel-header-background"
@@ -23,7 +25,10 @@ function ChatHeader() {
       <div className="flex gap-6">
         <MdCall className="text-panel-header-icon text-xl cursor-pointer" />
         <IoVideocam className="text-panel-header-icon text-xl cursor-pointer" />
-        <BiSearchAlt2 className="text-panel-header-icon text-xl cursor-pointer" />
+        <BiSearchAlt2
+          onClick={() => dispatch(setSearchMessage())}
+          className="text-panel-header-icon text-xl cursor-pointer"
+        />
         <BsThreeDotsVertical className="text-panel-header-icon text-xl cursor-pointer" />
       </div>
     </div>
