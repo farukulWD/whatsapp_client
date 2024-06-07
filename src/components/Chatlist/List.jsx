@@ -6,7 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 import ChatLIstItem from "./ChatLIstItem";
 
 function List() {
-  const { userInfo, userContacts } = useSelector((state) => state.user);
+  const { userInfo, userContacts, filteredContacts } = useSelector(
+    (state) => state.user
+  );
+
   const dispatch = useDispatch();
   useEffect(() => {
     const getInitialContacts = async () => {
@@ -27,9 +30,13 @@ function List() {
   }, [userInfo]);
   return (
     <div className="flex flex-col bg-search-input-container-background flex-auto max-h-full custom-scrollbar overflow-auto h-full">
-      {userContacts?.map((contact) => {
-        return <ChatLIstItem key={contact?.id} data={contact} />;
-      })}
+      {filteredContacts && filteredContacts?.length > 0
+        ? filteredContacts?.map((contact) => {
+            return <ChatLIstItem key={contact?.id} data={contact} />;
+          })
+        : userContacts?.map((contact) => {
+            return <ChatLIstItem key={contact?.id} data={contact} />;
+          })}
     </div>
   );
 }
