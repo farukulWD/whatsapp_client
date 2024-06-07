@@ -10,20 +10,10 @@ function ChatContainer() {
   const { userInfo, currentChatUser } = useSelector((state) => state.user);
   const { messages } = useSelector((state) => state.message);
 
-  const messagesEndRef = useRef(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   return (
     <div className="h-[85vh] w-full relative flex-grow overflow-auto custom-scrollbar z-10">
-      <div className="mx-10  mt-5 mb-10 bottom-0 relative left-0 z-40">
-        <div className="flex w-full">
+      <div className="mx-10 flex  mt-5 mb-10 bottom-0 relative left-0 z-40">
+        <div className="flex  w-full">
           <div className="flex justify-end flex-col w-full  gap-1">
             {messages?.map((message, index) => {
               return (
